@@ -63,14 +63,25 @@ export default function BookingPage() {
 
   useEffect(() => {
     if (!doctorId || !serviceId || !date) {
-      setSlots([]);
       return;
     }
-    setLoadingSlots(true);
-    fetch(`/api/doctors/${doctorId}/slots?date=${date}&serviceId=${serviceId}`)
-      .then((res) => res.json())
-      .then((data) => setSlots(data.slots ?? []))
-      .finally(() => setLoadingSlots(false));
+    let cancelled = false;
+    async function loadSlots() {
+      setLoadingSlots(true);
+      try {
+        const res = await fetch(
+          `/api/doctors/${doctorId}/slots?date=${date}&serviceId=${serviceId}`
+        );
+        const data = await res.json();
+        if (!cancelled) setSlots(data.slots ?? []);
+      } finally {
+        if (!cancelled) setLoadingSlots(false);
+      }
+    }
+    loadSlots();
+    return () => {
+      cancelled = true;
+    };
   }, [doctorId, serviceId, date]);
 
   const selectedService = useMemo(

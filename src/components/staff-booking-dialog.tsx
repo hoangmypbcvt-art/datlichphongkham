@@ -47,7 +47,6 @@ export function StaffBookingDialog() {
 
   useEffect(() => {
     if (!doctorId || !serviceId || !date) {
-      setSlots([]);
       return;
     }
     fetch(`/api/doctors/${doctorId}/slots?date=${date}&serviceId=${serviceId}`)

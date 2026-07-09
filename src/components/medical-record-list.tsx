@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -30,23 +30,30 @@ export function MedicalRecordList({
 }) {
   const [records, setRecords] = useState<MedicalRecord[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const load = useCallback(() => {
-    setLoading(true);
-    fetch(`/api/medical-records?patientId=${patientId}`)
-      .then((res) => res.json())
-      .then((data) => setRecords(Array.isArray(data) ? data : []))
-      .finally(() => setLoading(false));
-  }, [patientId]);
+  const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
-    load();
-  }, [load, refreshKey]);
+    let cancelled = false;
+    async function loadRecords() {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/medical-records?patientId=${patientId}`);
+        const data = await res.json();
+        if (!cancelled) setRecords(Array.isArray(data) ? data : []);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    loadRecords();
+    return () => {
+      cancelled = true;
+    };
+  }, [patientId, refreshKey, reloadToken]);
 
   async function handleDelete(id: string) {
     if (!confirm("Xóa hồ sơ này?")) return;
     const res = await fetch(`/api/medical-records/${id}`, { method: "DELETE" });
-    if (res.ok) load();
+    if (res.ok) setReloadToken((k) => k + 1);
   }
 
   if (loading) return <p className="text-sm text-gray-500">Đang tải...</p>;
