@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PATIENT
+  STAFF
+  DOCTOR
+  ADMIN
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum SmsType {
+  CONFIRMATION
+  REMINDER
+}
+
+enum SmsStatus {
+  SENT
+  FAILED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  phone        String?
+  role         Role     @default(PATIENT)
+  createdAt    DateTime @default(now())
+
+  doctor          Doctor?
+  appointments    Appointment[]    @relation("PatientAppointments")
+  medicalRecords  MedicalRecord[]  @relation("PatientMedicalRecords")
+  uploadedRecords MedicalRecord[]  @relation("UploadedMedicalRecords")
+}
+
+model Doctor {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialty String
+  bio       String?
+
+  schedules    DoctorSchedule[]
+  appointments Appointment[]    @relation("DoctorAppointments")
+}
+
+model Service {
+  id              String  @id @default(cuid())
+  name            String
+  durationMinutes Int
+  price           Int
+
+  appointments Appointment[]
+}
+
+model DoctorSchedule {
+  id        String @id @default(cuid())
+  doctorId  String
+  doctor    Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  dayOfWeek Int
+  startTime String
+  endTime   String
+}
+
+model Appointment {
+  id        String            @id @default(cuid())
+  patientId String
+  patient   User              @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId  String
+  doctor    Doctor            @relation("DoctorAppointments", fields: [doctorId], references: [id], onDelete: Cascade)
+  serviceId String
+  service   Service           @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  date      String
+  startTime String
+  endTime   String
+  status    AppointmentStatus @default(PENDING)
+  note      String?
+  createdAt DateTime          @default(now())
+
+  smsLogs         SmsLog[]
+  medicalRecords  MedicalRecord[]
+}
+
+model SmsLog {
+  id            String      @id @default(cuid())
+  appointmentId String
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  phone         String
+  message       String
+  type          SmsType
+  status        SmsStatus   @default(SENT)
+  createdAt     DateTime    @default(now())
+}
+
+model MedicalRecord {
+  id            String       @id @default(cuid())
+  patientId     String
+  patient       User         @relation("PatientMedicalRecords", fields: [patientId], references: [id], onDelete: Cascade)
+  appointmentId String?
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  uploadedById  String
+  uploadedBy    User         @relation("UploadedMedicalRecords", fields: [uploadedById], references: [id])
+  fileName      String
+  filePath      String
+  fileType      String
+  fileSize      Int
+  description   String?
+  createdAt     DateTime     @default(now())
+}
