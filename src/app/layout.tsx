@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: `${SITE.clinicName} - Đặt lịch khám bệnh`,
   description: `Đặt lịch khám bệnh trực tuyến tại ${SITE.clinicName}, ${SITE.companyName}.`,
+  icons: {
+    icon: "/logo-nhat-tam.png",
+  },
 };
 
 export default function RootLayout({
