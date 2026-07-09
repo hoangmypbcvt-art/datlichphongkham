@@ -46,7 +46,6 @@ export function StaffBookingDialog() {
   }, [open]);
 
   useEffect(() => {
-    setSelectedSlot(null);
     if (!doctorId || !serviceId || !date) {
       setSlots([]);
       return;
@@ -119,7 +118,13 @@ export function StaffBookingDialog() {
 
           <div className="flex flex-col gap-2">
             <Label>Dịch vụ</Label>
-            <Select value={serviceId} onValueChange={(v) => setServiceId(v ?? "")}>
+            <Select
+              value={serviceId}
+              onValueChange={(v) => {
+                setServiceId(v ?? "");
+                setSelectedSlot(null);
+              }}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Chọn dịch vụ" />
               </SelectTrigger>
@@ -135,7 +140,13 @@ export function StaffBookingDialog() {
 
           <div className="flex flex-col gap-2">
             <Label>Bác sĩ</Label>
-            <Select value={doctorId} onValueChange={(v) => setDoctorId(v ?? "")}>
+            <Select
+              value={doctorId}
+              onValueChange={(v) => {
+                setDoctorId(v ?? "");
+                setSelectedSlot(null);
+              }}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Chọn bác sĩ" />
               </SelectTrigger>
@@ -154,7 +165,10 @@ export function StaffBookingDialog() {
             <Input
               type="date"
               value={date}
-              onChange={(e) => setDate(e.target.value)}
+              onChange={(e) => {
+                setDate(e.target.value);
+                setSelectedSlot(null);
+              }}
             />
           </div>
 

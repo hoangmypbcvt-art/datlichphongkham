@@ -62,7 +62,6 @@ export default function BookingPage() {
   }, []);
 
   useEffect(() => {
-    setSelectedSlot(null);
     if (!doctorId || !serviceId || !date) {
       setSlots([]);
       return;
@@ -130,7 +129,13 @@ export default function BookingPage() {
       <CardContent className="flex flex-col gap-5">
         <div className="flex flex-col gap-2">
           <Label>1. Chọn dịch vụ</Label>
-          <Select value={serviceId} onValueChange={(v) => setServiceId(v ?? "")}>
+          <Select
+            value={serviceId}
+            onValueChange={(v) => {
+              setServiceId(v ?? "");
+              setSelectedSlot(null);
+            }}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Chọn dịch vụ" />
             </SelectTrigger>
@@ -147,7 +152,13 @@ export default function BookingPage() {
 
         <div className="flex flex-col gap-2">
           <Label>2. Chọn bác sĩ</Label>
-          <Select value={doctorId} onValueChange={(v) => setDoctorId(v ?? "")}>
+          <Select
+            value={doctorId}
+            onValueChange={(v) => {
+              setDoctorId(v ?? "");
+              setSelectedSlot(null);
+            }}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Chọn bác sĩ" />
             </SelectTrigger>
@@ -168,7 +179,10 @@ export default function BookingPage() {
             type="date"
             min={todayISO()}
             value={date}
-            onChange={(e) => setDate(e.target.value)}
+            onChange={(e) => {
+              setDate(e.target.value);
+              setSelectedSlot(null);
+            }}
           />
         </div>
 
