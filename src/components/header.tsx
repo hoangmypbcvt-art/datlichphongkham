@@ -9,16 +9,19 @@ export async function Header() {
 
   return (
     <header className="border-b bg-primary text-primary-foreground shadow-sm">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4">
+      <div className="mx-auto grid max-w-5xl grid-cols-1 items-center gap-2 px-4 py-4 md:grid-cols-[1fr_auto_1fr]">
         <Link href="/" className="flex flex-col leading-tight">
+          <span className="text-xs font-medium text-primary-foreground/75">
+            {SITE.companyName}
+          </span>
           <span className="text-lg font-bold tracking-tight">
             {SITE.clinicName}
           </span>
-          <span className="text-xs text-primary-foreground/75">
-            {SITE.companyName}
-          </span>
         </Link>
-        <nav className="flex items-center gap-5 text-sm font-medium">
+        <span className="hidden text-center text-sm font-semibold tracking-wide text-primary-foreground/90 md:block">
+          TRANG ĐẶT LỊCH KHÁM
+        </span>
+        <nav className="flex items-center justify-start gap-5 text-sm font-medium md:justify-end">
           {role === "PATIENT" && (
             <>
               <Link href="/dat-lich" className="hover:opacity-80">
