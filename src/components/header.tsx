@@ -1,32 +1,52 @@
 import Link from "next/link";
 import { auth, signOut } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
+import { SITE } from "@/lib/site";
 
 export async function Header() {
   const session = await auth();
   const role = session?.user?.role;
 
   return (
-    <header className="border-b bg-white">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-        <Link href="/" className="text-lg font-semibold">
-          Phòng khám An Bình
+    <header className="border-b bg-primary text-primary-foreground shadow-sm">
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4">
+        <Link href="/" className="flex flex-col leading-tight">
+          <span className="text-lg font-bold tracking-tight">
+            {SITE.clinicName}
+          </span>
+          <span className="text-xs text-primary-foreground/75">
+            {SITE.companyName}
+          </span>
         </Link>
-        <nav className="flex items-center gap-4 text-sm">
+        <nav className="flex items-center gap-5 text-sm font-medium">
           {role === "PATIENT" && (
             <>
-              <Link href="/dat-lich">Đặt lịch</Link>
-              <Link href="/lich-hen-cua-toi">Lịch của tôi</Link>
-              <Link href="/ho-so-benh-an">Hồ sơ bệnh án</Link>
+              <Link href="/dat-lich" className="hover:opacity-80">
+                Đặt lịch
+              </Link>
+              <Link href="/lich-hen-cua-toi" className="hover:opacity-80">
+                Lịch của tôi
+              </Link>
+              <Link href="/ho-so-benh-an" className="hover:opacity-80">
+                Hồ sơ bệnh án
+              </Link>
             </>
           )}
           {(role === "STAFF" || role === "ADMIN") && (
-            <Link href="/staff">Lễ tân</Link>
+            <Link href="/staff" className="hover:opacity-80">
+              Lễ tân
+            </Link>
           )}
           {(role === "DOCTOR" || role === "ADMIN") && (
-            <Link href="/doctor">Bác sĩ</Link>
+            <Link href="/doctor" className="hover:opacity-80">
+              Bác sĩ
+            </Link>
           )}
-          {role === "ADMIN" && <Link href="/admin">Quản trị</Link>}
+          {role === "ADMIN" && (
+            <Link href="/admin" className="hover:opacity-80">
+              Quản trị
+            </Link>
+          )}
 
           {session ? (
             <form
@@ -35,15 +55,24 @@ export async function Header() {
                 await signOut({ redirectTo: "/" });
               }}
             >
-              <Button type="submit" variant="outline" size="sm">
+              <Button
+                type="submit"
+                variant="secondary"
+                size="sm"
+                className="text-secondary-foreground"
+              >
                 Đăng xuất ({session.user?.name})
               </Button>
             </form>
           ) : (
             <>
-              <Link href="/login">Đăng nhập</Link>
+              <Link href="/login" className="hover:opacity-80">
+                Đăng nhập
+              </Link>
               <Link href="/register">
-                <Button size="sm">Đăng ký</Button>
+                <Button size="sm" variant="secondary" className="text-secondary-foreground">
+                  Đăng ký
+                </Button>
               </Link>
             </>
           )}

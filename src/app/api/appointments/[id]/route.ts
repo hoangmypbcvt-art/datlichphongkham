@@ -3,6 +3,7 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { sendSms } from "@/lib/sms";
+import { SITE } from "@/lib/site";
 
 const updateSchema = z.object({
   status: z.enum(["PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"]),
@@ -60,7 +61,7 @@ export async function PATCH(
     await sendSms({
       appointmentId: appointment.id,
       phone: appointment.patient.phone,
-      message: `Lịch khám của bạn với BS. ${appointment.doctor.user.name} vào ${appointment.startTime} ngày ${appointment.date} đã được xác nhận. Phòng khám An Bình.`,
+      message: `Lịch khám của bạn với BS. ${appointment.doctor.user.name} vào ${appointment.startTime} ngày ${appointment.date} đã được xác nhận. ${SITE.clinicName}.`,
       type: "CONFIRMATION",
     });
   }

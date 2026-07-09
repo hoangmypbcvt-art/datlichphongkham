@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { sendSms } from "@/lib/sms";
+import { SITE } from "@/lib/site";
 
 export async function POST() {
   const session = await auth();
@@ -31,7 +32,7 @@ export async function POST() {
     await sendSms({
       appointmentId: appointment.id,
       phone: appointment.patient.phone,
-      message: `Nhắc lịch: bạn có lịch khám với BS. ${appointment.doctor.user.name} vào ${appointment.startTime} ngày mai (${appointment.date}) tại Phòng khám An Bình.`,
+      message: `Nhắc lịch: bạn có lịch khám với BS. ${appointment.doctor.user.name} vào ${appointment.startTime} ngày mai (${appointment.date}) tại ${SITE.clinicName}.`,
       type: "REMINDER",
     });
     sent++;
